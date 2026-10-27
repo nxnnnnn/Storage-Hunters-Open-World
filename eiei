@@ -1,0 +1,350 @@
+-- เคลียร์ของเก่าทิ้งป้องกันบั๊ก
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+if playerGui:FindFirstChild("SilverHub") then
+    playerGui.SilverHub:Destroy()
+end
+
+-- สร้างหน้าต่างหลัก ScreenGui
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "SilverHub"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = playerGui
+
+----------------------------------------------------
+-- 1. ปุ่มเปิด/ปิดหลัก สัญลักษณ์ # (สีแดงดำ ลากย้ายได้)
+----------------------------------------------------
+local ToggleBtn = Instance.new("TextButton")
+ToggleBtn.Parent = ScreenGui
+ToggleBtn.Size = UDim2.new(0, 50, 0, 50)
+ToggleBtn.Position = UDim2.new(0.05, 0, 0.25, 0)
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+ToggleBtn.BorderColor3 = Color3.fromRGB(200, 30, 30)
+ToggleBtn.BorderSizePixel = 2
+ToggleBtn.Text = "#"
+ToggleBtn.TextColor3 = Color3.fromRGB(255, 40, 40)
+ToggleBtn.TextSize = 28
+ToggleBtn.Font = Enum.Font.SourceSansBold
+ToggleBtn.Active = true
+ToggleBtn.Draggable = true
+
+local ToggleCorner = Instance.new("UICorner")
+ToggleCorner.CornerRadius = UDim.new(0, 12)
+ToggleCorner.Parent = ToggleBtn
+
+----------------------------------------------------
+-- 2. เมนูกรอบหลัก (ชื่อ Silver.)
+----------------------------------------------------
+local MainFrame = Instance.new("Frame")
+MainFrame.Parent = ScreenGui
+MainFrame.Size = UDim2.new(0, 230, 0, 240)
+MainFrame.Position = UDim2.new(0.15, 0, 0.18, 0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+MainFrame.BorderColor3 = Color3.fromRGB(180, 0, 0)
+MainFrame.BorderSizePixel = 1
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Visible = true
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 12)
+MainCorner.Parent = MainFrame
+
+-- หัวข้อหน้าต่าง
+local Title = Instance.new("TextLabel")
+Title.Parent = MainFrame
+Title.Size = UDim2.new(1, 0, 0, 35)
+Title.BackgroundColor3 = Color3.fromRGB(30, 10, 10)
+Title.Text = "  Silver."
+Title.TextColor3 = Color3.fromRGB(255, 60, 60)
+Title.TextSize = 15
+Title.Font = Enum.Font.SourceSansBold
+Title.TextXAlignment = Enum.TextXAlignment.Left
+
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 12)
+TitleCorner.Parent = Title
+
+-- กดปุ่ม # เพื่อเปิด/ปิด เมนู
+ToggleBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+end)
+
+----------------------------------------------------
+-- 3. ระบบสลับหน้าเมนู (Tabs: Main | Teleport)
+----------------------------------------------------
+local TabMainBtn = Instance.new("TextButton")
+TabMainBtn.Parent = MainFrame
+TabMainBtn.Size = UDim2.new(0.46, 0, 0, 28)
+TabMainBtn.Position = UDim2.new(0.03, 0, 0, 42)
+TabMainBtn.BackgroundColor3 = Color3.fromRGB(180, 30, 30)
+TabMainBtn.Text = "⚡ ฟังก์ชันหลัก"
+TabMainBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+TabMainBtn.TextSize, TabMainBtn.Font = 12, Enum.Font.SourceSansBold
+local t1c = Instance.new("UICorner") t1c.CornerRadius = UDim.new(0, 6) t1c.Parent = TabMainBtn
+
+local TabTpBtn = Instance.new("TextButton")
+TabTpBtn.Parent = MainFrame
+TabTpBtn.Size = UDim2.new(0.46, 0, 0, 28)
+TabTpBtn.Position = UDim2.new(0.51, 0, 0, 42)
+TabTpBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+TabTpBtn.Text = "📍 จุดวาร์ป"
+TabTpBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
+TabTpBtn.TextSize, TabTpBtn.Font = 12, Enum.Font.SourceSansBold
+local t2c = Instance.new("UICorner") t2c.CornerRadius = UDim.new(0, 6) t2c.Parent = TabTpBtn
+
+-- คอนเทนเนอร์หน้าหลัก (Main Container)
+local ContainerMain = Instance.new("Frame")
+ContainerMain.Parent = MainFrame
+ContainerMain.Size = UDim2.new(1, 0, 0, 160)
+ContainerMain.Position = UDim2.new(0, 0, 0, 75)
+ContainerMain.BackgroundTransparency = 1
+ContainerMain.Visible = true
+
+-- คอนเทนเนอร์ตุนวาร์ป (Teleport Container)
+local ContainerTp = Instance.new("Frame")
+ContainerTp.Parent = MainFrame
+ContainerTp.Size = UDim2.new(1, 0, 0, 160)
+ContainerTp.Position = UDim2.new(0, 0, 0, 75)
+ContainerTp.BackgroundTransparency = 1
+ContainerTp.Visible = false
+
+-- กดสลับหน้า Tabs
+TabMainBtn.MouseButton1Click:Connect(function()
+    ContainerMain.Visible = true
+    ContainerTp.Visible = false
+    TabMainBtn.BackgroundColor3 = Color3.fromRGB(180, 30, 30)
+    TabMainBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TabTpBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    TabTpBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
+end)
+
+TabTpBtn.MouseButton1Click:Connect(function()
+    ContainerMain.Visible = false
+    ContainerTp.Visible = true
+    TabTpBtn.BackgroundColor3 = Color3.fromRGB(180, 30, 30)
+    TabTpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TabMainBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    TabMainBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
+end)
+
+----------------------------------------------------
+-- 4. เนื้อหาหน้าหลัก (ContainerMain): Auto Bid & Rejoin Server
+----------------------------------------------------
+
+-- ปุ่ม Auto Bid
+local BidBtn = Instance.new("TextButton")
+BidBtn.Parent = ContainerMain
+BidBtn.Size = UDim2.new(0.9, 0, 0, 40)
+BidBtn.Position = UDim2.new(0.05, 0, 0, 10)
+BidBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+BidBtn.Text = "Auto Bid: OFF"
+BidBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+BidBtn.TextSize, BidBtn.Font = 13, Enum.Font.SourceSansBold
+local bc = Instance.new("UICorner") bc.CornerRadius = UDim.new(0, 8) bc.Parent = BidBtn
+
+local autoBidState = false
+BidBtn.MouseButton1Click:Connect(function()
+    autoBidState = not autoBidState
+    if autoBidState then
+        BidBtn.Text = "Auto Bid: ON"
+        BidBtn.BackgroundColor3 = Color3.fromRGB(180, 30, 30)
+        BidBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        task.spawn(function()
+            while autoBidState do
+                pcall(function()
+                    local rep = game:GetService("ReplicatedStorage")
+                    for _, v in pairs(rep:GetDescendants()) do
+                        if v:IsA("RemoteEvent") and v.Name:lower():find("bid") then
+                            v:FireServer()
+                        end
+                    end
+                end)
+                task.wait(0.3)
+            end
+        end)
+    else
+        BidBtn.Text = "Auto Bid: OFF"
+        BidBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+        BidBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+    end
+end)
+
+----------------------------------------------------
+-- 5. หน้าต่างแจ้งเตือนยืนยันการ Rejoin
+----------------------------------------------------
+local ConfirmFrame = Instance.new("Frame")
+ConfirmFrame.Parent = ScreenGui
+ConfirmFrame.Size = UDim2.new(0, 220, 0, 110)
+ConfirmFrame.Position = UDim2.new(0.5, -110, 0.4, -55)
+ConfirmFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+ConfirmFrame.BorderColor3 = Color3.fromRGB(255, 40, 40)
+ConfirmFrame.BorderSizePixel = 2
+ConfirmFrame.Visible = false
+ConfirmFrame.ZIndex = 10
+
+local ConfirmCorner = Instance.new("UICorner")
+ConfirmCorner.CornerRadius = UDim.new(0, 10)
+ConfirmCorner.Parent = ConfirmFrame
+
+local ConfirmText = Instance.new("TextLabel")
+ConfirmText.Parent = ConfirmFrame
+ConfirmText.Size = UDim2.new(1, -10, 0, 50)
+ConfirmText.Position = UDim2.new(0, 5, 0, 5)
+ConfirmText.BackgroundTransparency = 1
+ConfirmText.Text = "คุณต้องการรีจอยเข้าเซิร์ฟเวอร์\nใหม่อีกครั้งใช่หรือไม่?"
+ConfirmText.TextColor3 = Color3.fromRGB(255, 255, 255)
+ConfirmText.TextSize = 13
+ConfirmText.Font = Enum.Font.SourceSansBold
+ConfirmText.ZIndex = 11
+
+local YesBtn = Instance.new("TextButton")
+YesBtn.Parent = ConfirmFrame
+YesBtn.Size = UDim2.new(0.42, 0, 0, 32)
+YesBtn.Position = UDim2.new(0.05, 0, 0.6, 0)
+YesBtn.BackgroundColor3 = Color3.fromRGB(180, 30, 30)
+YesBtn.Text = "ใช่"
+YesBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+YesBtn.TextSize, YesBtn.Font = 13, Enum.Font.SourceSansBold
+YesBtn.ZIndex = 11
+local yc = Instance.new("UICorner") yc.CornerRadius = UDim.new(0, 6) yc.Parent = YesBtn
+
+local NoBtn = Instance.new("TextButton")
+NoBtn.Parent = ConfirmFrame
+NoBtn.Size = UDim2.new(0.42, 0, 0, 32)
+NoBtn.Position = UDim2.new(0.53, 0, 0.6, 0)
+NoBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+NoBtn.Text = "ยกเลิก"
+NoBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+NoBtn.TextSize, NoBtn.Font = 13, Enum.Font.SourceSansBold
+NoBtn.ZIndex = 11
+local nc = Instance.new("UICorner") nc.CornerRadius = UDim.new(0, 6) nc.Parent = NoBtn
+
+-- ปุ่ม Rejoin Server (หน้าหลัก)
+local RejoinBtn = Instance.new("TextButton")
+RejoinBtn.Parent = ContainerMain
+RejoinBtn.Size = UDim2.new(0.9, 0, 0, 40)
+RejoinBtn.Position = UDim2.new(0.05, 0, 0, 60)
+RejoinBtn.BackgroundColor3 = Color3.fromRGB(80, 20, 20)
+RejoinBtn.Text = "Rejoin Server"
+RejoinBtn.TextColor3 = Color3.fromRGB(255, 200, 200)
+RejoinBtn.TextSize, RejoinBtn.Font = 13, Enum.Font.SourceSansBold
+local rc = Instance.new("UICorner") rc.CornerRadius = UDim.new(0, 8) rc.Parent = RejoinBtn
+
+RejoinBtn.MouseButton1Click:Connect(function()
+    ConfirmFrame.Visible = true
+end)
+
+YesBtn.MouseButton1Click:Connect(function()
+    ConfirmFrame.Visible = false
+    pcall(function()
+        local ts = game:GetService("TeleportService")
+        ts:TeleportToPlaceInstance(game.PlaceId, game.JobId, player)
+    end)
+end)
+
+NoBtn.MouseButton1Click:Connect(function()
+    ConfirmFrame.Visible = false
+end)
+
+----------------------------------------------------
+-- 6. เนื้อหาหน้าจุดวาร์ป (ContainerTp)
+----------------------------------------------------
+local waypoints = {}
+
+local AddWpBtn = Instance.new("TextButton")
+AddWpBtn.Parent = ContainerTp
+AddWpBtn.Size = UDim2.new(0.9, 0, 0, 30)
+AddWpBtn.Position = UDim2.new(0.05, 0, 0, 5)
+AddWpBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+AddWpBtn.Text = "➕ บันทึกจุดวาร์ปปัจจุบัน"
+AddWpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+AddWpBtn.TextSize, AddWpBtn.Font = 12, Enum.Font.SourceSansBold
+local awc = Instance.new("UICorner") awc.CornerRadius = UDim.new(0, 6) awc.Parent = AddWpBtn
+
+local WpScroll = Instance.new("ScrollingFrame")
+WpScroll.Parent = ContainerTp
+WpScroll.Size = UDim2.new(0.9, 0, 0, 80)
+WpScroll.Position = UDim2.new(0.05, 0, 0, 40)
+WpScroll.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+WpScroll.BorderColor3 = Color3.fromRGB(80, 20, 20)
+WpScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+WpScroll.ScrollBarThickness = 4
+local wpsc = Instance.new("UICorner") wpsc.CornerRadius = UDim.new(0, 6) wpsc.Parent = WpScroll
+
+local function updateWaypointList()
+    for _, child in pairs(WpScroll:GetChildren()) do
+        if child:IsA("TextButton") then
+            child:Destroy()
+        end
+    end
+    
+    local yPos = 2
+    for i, cf in ipairs(waypoints) do
+        local tpItem = Instance.new("TextButton")
+        tpItem.Parent = WpScroll
+        tpItem.Size = UDim2.new(1, -6, 0, 28)
+        tpItem.Position = UDim2.new(0, 3, 0, yPos)
+        tpItem.BackgroundColor3 = Color3.fromRGB(60, 25, 25)
+        tpItem.Text = "📍 จุดวาร์ปที่ " .. i
+        tpItem.TextColor3 = Color3.fromRGB(255, 200, 200)
+        tpItem.TextSize, tpItem.Font = 11, Enum.Font.SourceSansBold
+        
+        local tic = Instance.new("UICorner") tic.CornerRadius = UDim.new(0, 4) tic.Parent = tpItem
+        
+        tpItem.MouseButton1Click:Connect(function()
+            pcall(function()
+                if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                    player.Character.HumanoidRootPart.CFrame = cf
+                end
+            end)
+        end)
+        yPos = yPos + 32
+    end
+    WpScroll.CanvasSize = UDim2.new(0, 0, 0, yPos)
+end
+
+AddWpBtn.MouseButton1Click:Connect(function()
+    pcall(function()
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            table.insert(waypoints, player.Character.HumanoidRootPart.CFrame)
+            updateWaypointList()
+            AddWpBtn.Text = "✅ บันทึกสำเร็จ (" .. #waypoints .. ")"
+            task.wait(1)
+            AddWpBtn.Text = "➕ บันทึกจุดวาร์ปปัจจุบัน"
+        end
+    end)
+end)
+
+local ClearWpBtn = Instance.new("TextButton")
+ClearWpBtn.Parent = ContainerTp
+ClearWpBtn.Size = UDim2.new(0.42, 0, 0, 28)
+ClearWpBtn.Position = UDim2.new(0.05, 0, 0, 125)
+ClearWpBtn.BackgroundColor3 = Color3.fromRGB(100, 30, 30)
+ClearWpBtn.Text = "🗑️ ล้างทั้งหมด"
+ClearWpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ClearWpBtn.TextSize, ClearWpBtn.Font = 11, Enum.Font.SourceSansBold
+local cwc = Instance.new("UICorner") cwc.CornerRadius = UDim.new(0, 6) cwc.Parent = ClearWpBtn
+
+ClearWpBtn.MouseButton1Click:Connect(function()
+    waypoints = {}
+    updateWaypointList()
+end)
+
+local AirTPBtn = Instance.new("TextButton")
+AirTPBtn.Parent = ContainerTp
+AirTPBtn.Size = UDim2.new(0.44, 0, 0, 28)
+AirTPBtn.Position = UDim2.new(0.51, 0, 0, 125)
+AirTPBtn.BackgroundColor3 = Color3.fromRGB(45, 20, 20)
+AirTPBtn.Text = "☁️ วาร์ปขึ้นฟ้า"
+AirTPBtn.TextColor3 = Color3.fromRGB(255, 180, 180)
+AirTPBtn.TextSize, AirTPBtn.Font = 11, Enum.Font.SourceSansBold
+local atc = Instance.new("UICorner") atc.CornerRadius = UDim.new(0, 6) atc.Parent = AirTPBtn
+
+AirTPBtn.MouseButton1Click:Connect(function()
+    pcall(function()
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame + Vector3.new(0, 150, 0)
+        end
+    end)
+end)
